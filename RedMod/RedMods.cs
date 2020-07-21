@@ -18,7 +18,6 @@ namespace RogueLibsCore.Examples
         {
 
             if(setup == false) {
-                Logger.LogInfo("NOT SETUP");
                 setup = true;
                 Sprite punchSprite = RogueUtilities.ConvertToSprite(RedMod.Properties.Resources.punch);
                 CustomItem punchItem = RogueLibs.SetItem("saitamaPunch", punchSprite,
