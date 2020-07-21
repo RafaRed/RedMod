@@ -1,5 +1,5 @@
 # RedMod
 
-Enable some Rogue of Streets feactures
+Enable some Custom Stuff from Rogue of Streets
 
 - Saitama Custom character
