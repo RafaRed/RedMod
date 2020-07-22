@@ -14,7 +14,7 @@ namespace RedMod
     {
 
         public static Agent thisAgent;
-        public static int abilityPrice = 3;
+        public static int abilityPrice = 12;
 
         public static void setStatus(string id)
         {
@@ -131,7 +131,7 @@ namespace RedMod
         public static void randomBadEffect()
         {
             System.Random rnd = new System.Random();
-            int EffectMAX = 5;
+            int EffectMAX = 8;
             int effect = rnd.Next(0, EffectMAX+1);
 
 
@@ -141,19 +141,35 @@ namespace RedMod
                     removeHP(20);
                     break;
                 case 1:
-                    removeHP(40);
+                    removeHP(30);
                     break;
                 case 2:
-                    recieveItem("Cigarettes", 1);
+                    removeHP(30);
                     break;
                 case 3:
-                    removeHP(9999);
+                    if (rnd.Next(0, 100) < 90)
+                    {
+                        removeHP(9999);
+                    }
+                    else {
+                        removeHP(9);
+                    }
+                    
                     break;
                 case 4:
                     setStatus("Frozen");
                     break;
                 case 5:
                     setStatus("Confused");
+                    break;
+                case 6:
+                    removeHP(40);
+                    break;
+                case 7:
+                    recieveItem("Cigarettes", 1);
+                    break;
+                case 8:
+                    recieveItem("Cigarettes", 1);
                     break;
 
 
@@ -183,27 +199,27 @@ namespace RedMod
                 yield return new WaitForSeconds(1f);
 
 
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 7; i++)
                 {
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.3f);
 
                     int random = rnd.Next(1, 7);
                     thisAgent.Say("" + random.ToString());
 
-                    if (i == 14)
+                    if (i == 6)
                     {
 
                        
                         String result = "";
-                        if (random == 1 || random == 2 || random == 3)
+                        if (random == 1 || random == 2 )
                         {
                             result = " That's bad.";
                         }
-                        else if (random == 4 || random == 5)
+                        else if (random == 3 ||random == 4  )
                         {
                             result = " Nice!";
                         }
-                        else if (random == 6)
+                        else if (random == 5 || random == 6)
                         {
                             result = " That's great!";
                         }
@@ -218,11 +234,11 @@ namespace RedMod
                 }
                 yield return new WaitForSeconds(1);
 
-                 if (lastNumber == 1 || lastNumber == 2 || lastNumber == 3)
+                 if (lastNumber == 1 || lastNumber == 2 )
                  {
                      randomBadEffect();
                  }
-                 else if (lastNumber == 4 || lastNumber == 5)
+                 else if (lastNumber == 3 || lastNumber == 4 || lastNumber == 5)
                  {
                      randomNormalEffect();
                  }
