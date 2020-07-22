@@ -45,10 +45,10 @@ C:\Users\rafae\Documents\RedMod\RedMod\bin\Debug\UnityEngine.UnityWebRequestModu
 C:\Users\rafae\Documents\RedMod\RedMod\bin\Debug\UnityEngine.UnityWebRequestWWWModule.dll
 C:\Users\rafae\Documents\RedMod\RedMod\bin\Debug\RogueLibs.pdb
 C:\Users\rafae\Documents\RedMod\RedMod\bin\Debug\RogueLibs.xml
-C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.csprojAssemblyReference.cache
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.Properties.Resources.resources
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.csproj.GenerateResource.cache
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.csproj.CoreCompileInputs.cache
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.csproj.CopyComplete
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.dll
 C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.pdb
+C:\Users\rafae\Documents\RedMod\RedMod\obj\Debug\RedMod.csprojAssemblyReference.cache

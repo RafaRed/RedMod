@@ -69,5 +69,15 @@ namespace RedMod.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
+        internal static byte[] questionmark {
+            get {
+                object obj = ResourceManager.GetObject("questionmark", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
