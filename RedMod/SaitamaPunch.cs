@@ -1,6 +1,4 @@
-﻿using System;
-using BepInEx;
-using RogueLibsCore;
+﻿using RogueLibsCore;
 using UnityEngine;
 
 namespace RedMod
@@ -11,7 +9,7 @@ namespace RedMod
         public static void LoadSkill()
         {
             Sprite punchSprite = RogueUtilities.ConvertToSprite(RedMod.Properties.Resources.punch);
-            CustomItem punchItem = RogueLibs.SetItem("saitamaPunch", punchSprite,
+            CustomAbility saitamaPunch = RogueLibs.CreateCustomAbility("saitamaPunch", punchSprite, true,
                 new CustomNameInfo("Saitamas punch"),
                 new CustomNameInfo("Just one punch is enough"),
                 item =>
@@ -21,7 +19,7 @@ namespace RedMod
 
 
 
-            CustomAbility saitamaPunch = RogueLibs.SetAbility(punchItem);
+
 
             saitamaPunch.OnPressed = (item, agent) =>
             {

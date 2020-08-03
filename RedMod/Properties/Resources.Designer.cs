@@ -63,6 +63,16 @@ namespace RedMod.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
+        internal static byte[] BlankSoulStone {
+            get {
+                object obj = ResourceManager.GetObject("BlankSoulStone", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
         internal static byte[] punch {
             get {
                 object obj = ResourceManager.GetObject("punch", resourceCulture);
@@ -76,6 +86,26 @@ namespace RedMod.Properties {
         internal static byte[] questionmark {
             get {
                 object obj = ResourceManager.GetObject("questionmark", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
+        internal static byte[] SoulBreaker {
+            get {
+                object obj = ResourceManager.GetObject("SoulBreaker", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
+        internal static byte[] soulstone {
+            get {
+                object obj = ResourceManager.GetObject("soulstone", resourceCulture);
                 return ((byte[])(obj));
             }
         }

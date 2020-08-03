@@ -1,12 +1,9 @@
 ﻿using System;
-using BepInEx;
-using RogueLibsCore;
-using UnityEngine;
-
 using System.Collections;
-using RogueLibsCore.Redmod;
 using System.Collections.Generic;
-using UnityEngine.Networking;
+using RogueLibsCore;
+using RogueLibsCore.Redmod;
+using UnityEngine;
 
 namespace RedMod
 {
@@ -15,6 +12,72 @@ namespace RedMod
 
         public static Agent thisAgent;
         public static int abilityPrice = 12;
+        public static bool activated = false;
+
+
+        public static void buffEverybody(string id)
+        {
+
+            ObjectMult server = null;
+
+            List<Agent> players = new List<Agent>();
+            foreach (Agent a in GameController.gameController.agentList)
+            {
+                if (a.isPlayer != 0) players.Add(a);
+                if (a.isPlayer != 0 && a.objectMult.isServer)
+                {
+                    server = a.objectMult;
+                }
+            }
+
+
+
+            foreach (Agent a in players)
+            {
+
+                if (activated)
+                {
+                    a.statusEffects.RemoveStatusEffect(id);
+                }
+                else
+                {
+
+                    GameController.gameController.playerAgent.objectMult.CallCmdAddStatusEffect(id, a.objectNetID, true, true, 5);
+                    a.statusEffects.AddStatusEffect(id, a, a, a.objectMult.IsFromClient(), true, 1);
+                    // RedNetwork.AddStatusEffectOthers(id, true, GameController.gameController.playerAgent, a, GameController.gameController.playerAgent.objectMult.IsFromClient(), true, -1);
+                    //a.objectMult.AddStatusEffect(id, true, a, a.objectMult.IsFromClient(), true, -1);
+                    //a.objectMult.CallCmdAddStatusEffect(id, a.objectNetID, true, true, 5);
+                    //a.objectMult.CallRpcAddStatusEffect(id, a.objectNetID, true, a.objectMult.IsFromClient(), true, 5);
+                    //a.objectMult.AddStatusEffect(id,true,thisAgent,thisAgent.objectMult.IsFromClient(),true,-1);
+                    //Debug.Log("server:" + a.objectMult.ToString());
+                    /* if (!thisAgent.objectMult.gc.serverPlayer && thisAgent.objectMultAgent.isLocalPlayer && thisAgent.objectMult.IsFromClient() != NetworkInstanceId.Invalid)
+                     {
+                         a.objectMult.CallCmdAddStatusEffect(id, thisAgent.objectNetID, true, true, 5);
+                         Debug.Log("CmdAddStatusEffect: " + id);
+                     }
+                     else if (thisAgent.objectMult.gc.serverPlayer)
+                     {
+                         thisAgent.objectMult.CallRpcAddStatusEffect(id, thisAgent.objectNetID, true, thisAgent.objectMult.IsFromClient(), true, 5);
+                         Debug.Log("RpcAddStatusEffect: " + id);
+                     }*/
+
+
+                    //thisAgent.objectMult.CallRpcAddStatusEffect(id, a.objectMult.IsFromClient(), true, a.objectMult.IsFromClient(), false, 5);
+                    //Debug.Log("RpcAddStatusEffect: " + id);
+
+                    //a.statusEffects.AddStatusEffect(id);
+
+                    //a.statusEffects.ChangeStatusEffectTime(id, 10);
+
+                    //a.objectMult.AddStatusEffect(id,true,thisAgent,a.objectMult.IsFromClient(),false,-1);
+                    //a.objectMult.CallCmdAddStatusEffect(id, a.objectMult.IsFromClient(),true, false, -1);
+
+                }
+            }
+            activated = !activated;
+
+
+        }
 
         public static void setStatus(string id)
         {
@@ -25,7 +88,7 @@ namespace RedMod
              {
                  thisAgent.Say(a.agentName);
              }*/
-            thisAgent.Say(id.ToUpper()+"!");
+            thisAgent.Say(id.ToUpper() + "!");
             thisAgent.statusEffects.AddStatusEffect(id);
             // AddStatusEffect("Giant",true,thisAgent,thisAgent.objectNetID,true, 3);
             //thisAgent.objectMultAgent.RemoveStatusEffect("Giant", true, thisAgent.objectNetID);
@@ -41,19 +104,20 @@ namespace RedMod
         public static void removeHP(int count)
         {
             thisAgent.statusEffects.ChangeHealth(-count);
-            thisAgent.Say("Lose -"+count+"HP");
+            thisAgent.Say("Lose -" + count + "HP");
         }
 
-        public static void addHP(int count) {
+        public static void addHP(int count)
+        {
             thisAgent.statusEffects.ChangeHealth(count);
-            thisAgent.Say("Heal +"+ count + "HP");
+            thisAgent.Say("Heal +" + count + "HP");
         }
 
         public static void randomGreatEffect()
         {
             System.Random rnd = new System.Random();
             int EffectMAX = 7;
-            int effect = rnd.Next(0, EffectMAX+1);
+            int effect = rnd.Next(0, EffectMAX + 1);
 
 
             switch (effect)
@@ -83,7 +147,7 @@ namespace RedMod
                     setStatus("Giant");
                     break;
 
-               
+
 
 
             }
@@ -93,7 +157,7 @@ namespace RedMod
         {
             System.Random rnd = new System.Random();
             int EffectMAX = 8;
-            int effect = rnd.Next(0, EffectMAX+1);
+            int effect = rnd.Next(0, EffectMAX + 1);
 
 
             switch (effect)
@@ -120,7 +184,7 @@ namespace RedMod
                     setStatus("IncreaseAllStats");
                     break;
                 case 7:
-                    recieveItem("Sword",100);
+                    recieveItem("Sword", 100);
                     break;
                 case 8:
                     recieveItem("QuickEscapeTeleporter", 1);
@@ -132,7 +196,7 @@ namespace RedMod
         {
             System.Random rnd = new System.Random();
             int EffectMAX = 8;
-            int effect = rnd.Next(0, EffectMAX+1);
+            int effect = rnd.Next(0, EffectMAX + 1);
 
 
             switch (effect)
@@ -151,10 +215,11 @@ namespace RedMod
                     {
                         removeHP(9999);
                     }
-                    else {
+                    else
+                    {
                         removeHP(9);
                     }
-                    
+
                     break;
                 case 4:
                     setStatus("Frozen");
@@ -182,14 +247,14 @@ namespace RedMod
             InvItem money = invDatabase.FindItem("Money");
             if (!(abilityPrice == 0 || (money != null && money.invItemCount >= abilityPrice)))
             {
-                thisAgent.Say("You need "+ abilityPrice.ToString() + " coins");
+                thisAgent.Say("You need " + abilityPrice.ToString() + " coins");
                 yield return new WaitForSeconds(1f);
 
             }
             else
             {
-               
-                
+
+
                 thisAgent.inventory.SubtractFromItemCount(money, abilityPrice);
 
                 System.Random rnd = new System.Random();
@@ -209,13 +274,13 @@ namespace RedMod
                     if (i == 6)
                     {
 
-                       
+
                         String result = "";
-                        if (random == 1 || random == 2 )
+                        if (random == 1 || random == 2)
                         {
                             result = " That's bad.";
                         }
-                        else if (random == 3 ||random == 4  )
+                        else if (random == 3 || random == 4)
                         {
                             result = " Nice!";
                         }
@@ -230,24 +295,25 @@ namespace RedMod
 
 
                     }
-                    
+
                 }
                 yield return new WaitForSeconds(1);
 
-                 if (lastNumber == 1 || lastNumber == 2 )
-                 {
-                     randomBadEffect();
-                 }
-                 else if (lastNumber == 3 || lastNumber == 4 || lastNumber == 5)
-                 {
-                     randomNormalEffect();
-                 }
-                 else if (lastNumber == 6)
-                 {
-                     randomGreatEffect();
-                 }
+                if (lastNumber == 1 || lastNumber == 2)
+                {
+                    randomBadEffect();
+                }
+                else if (lastNumber == 3 || lastNumber == 4 || lastNumber == 5)
+                {
+                    randomNormalEffect();
+                }
+                else if (lastNumber == 6)
+                {
+                    randomGreatEffect();
+                }
+                //buffEverybody("Giant");
                 //recieveItem("Revolver", 100);
-                
+
             }
 
 
@@ -257,16 +323,16 @@ namespace RedMod
 
         public static void RandomEffect()
         {
-            
+
             RedModMain.redModMain.StartCoroutine(rollTheDice());
         }
 
         public static void LoadSkill()
         {
-            
+
 
             Sprite questionmarkSprite = RogueUtilities.ConvertToSprite(RedMod.Properties.Resources.questionmark);
-            CustomItem randomItem = RogueLibs.SetItem("randomAbility", questionmarkSprite,
+            CustomAbility randomAbility = RogueLibs.CreateCustomAbility("randomAbility", questionmarkSprite, true,
                 new CustomNameInfo("Random Ability"),
                 new CustomNameInfo("???"),
                 item =>
@@ -276,17 +342,35 @@ namespace RedMod
 
 
 
-            CustomAbility randomAbility = RogueLibs.SetAbility(randomItem);
 
             randomAbility.OnPressed = (item, agent) =>
             {
+                RedNetwork redNetwork = GameController.gameController.playerAgent.objectMult.gameObject.AddComponent(typeof(RedNetwork)) as RedNetwork;
                 if (item.invItemCount > 0) // is recharging
                     agent.gc.audioHandler.Play(agent, "CantDo");
                 else
                 {
                     thisAgent = agent;
                     RandomEffect();
+                    //InvItem newItem3 = GameController.gameController.playerAgent.inventory.AddItem("Giantizer", 2);
+                    /*List<Agent> players = new List<Agent>();
+                    foreach (Agent a in GameController.gameController.playerAgentList)
+                    {
+                        
+                        players.Add(a);
+                        Debug.Log("NetId: "+ a.objectNetID);
+                        GameController.gameController.playerAgent.GetComponent<RedNetwork>().AddStatusEffectOthers("Giant", true, GameController.gameController.playerAgent, a, GameController.gameController.playerAgent.objectMult.IsFromClient(), true, -1);
+                        //a.statusEffects.AddStatusEffect("Invisible", true, GameController.gameController.playerAgent, a.objectNetID, false, -1);
+                        //GameController.gameController.playerAgent.statusEffects.AddStatusEffectSpecial("Invisible", a, GameController.gameController.playerAgent, false);
+                        //a.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(this.GetComponent<NetworkIdentity>().connectionToClient);
+                        //a.objectMultAgent.CallCmdAddStatusEffectSpecial("Invisible", GameController.gameController.playerAgent.objectNetID, true, false, -1);
 
+                    }*/
+
+                    //GameController.gameController.playerAgent.objectMultAgent.CallCmdAddStatusEffect("Invisible", GameController.gameController.playerAgent.objectNetID, true, false, -1);
+                    //GameController.gameController.playerAgent.statusEffects.AddStatusEffect("Invisible", true, GameController.gameController.playerAgent, GameController.gameController.playerAgent.objectNetID, false, -1);
+                    //GameController.gameController.hostPlayer.objectMultAgent.CallRpcAddStatusEffect("Invisible", GameController.gameController.hostPlayer.objectNetID,true, GameController.gameController.hostPlayer.objectMultAgent.IsFromClient(),  false, -1);
+                    //GameController.gameController.playerAgent.objectMultAgent.AddStatusEffect("Invisible", true, GameController.gameController.playerAgent, GameController.gameController.hostPlayer.objectMultAgent.IsFromClient(), true, -1);
                     agent.inventory.buffDisplay.specialAbilitySlot.MakeNotUsable();
                     // make special ability slot half-transparent
                     item.invItemCount = 100; // 100 x 0.13f = 13 seconds to recharge
