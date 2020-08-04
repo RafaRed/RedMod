@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RogueLibsCore;
+using RogueLibsCore.Redmod;
 using UnityEngine;
 
 namespace RedMod
@@ -8,7 +9,7 @@ namespace RedMod
     {
 
 
-        static void blank(Agent myPlayer, List<Agent> haters)
+        public static void blank(Agent myPlayer, List<Agent> haters)
         {
             //myPlayer.objectSprite.Flash();
             //myPlayer.SpawnParticleEffect("BulletTrailMindControl", myPlayer.tr.position);
@@ -22,7 +23,7 @@ namespace RedMod
                 {
                     haters[i].objectSprite.Flash();
 
-                    /*haters[i].pathing = 0;
+                    haters[i].pathing = 0;
                     haters[i].movement.PathStop();
                     haters[i].brainUpdate.slowAIWait = 0;
                     if (haters[i].brain.Goals.Count > 0)
@@ -38,7 +39,7 @@ namespace RedMod
                     haters[i].mostRecentGoalCode = goalType.DoNothing;
                     haters[i].inCombat = false;
                     haters[i].inFleeCombat = false;
-                    haters[i].gc.spawnerMain.SpawnStateIndicator(haters[i], "NoAnim");*/
+                    haters[i].gc.spawnerMain.SpawnStateIndicator(haters[i], "NoAnim");
                     haters[i].gc.audioHandler.Play(haters[i], "AgentAnnoyed");
 
                     myPlayer.objectMultAgent.SetRel(haters[i], "Neutral", true);
@@ -51,9 +52,9 @@ namespace RedMod
             }
         }
 
-        static void flash()
+        public static void flash(int agentid)
         {
-            Agent playerAgent = GameController.gameController.playerAgent;
+            Agent playerAgent = GameController.gameController.playerAgentList[agentid];
             List<Agent> list = new List<Agent>();
             for (int i = 0; i < GameController.gameController.agentList.Count; i++)
             {
@@ -103,8 +104,8 @@ namespace RedMod
                     agent.gc.audioHandler.Play(agent, "CantDo");
                 else
                 {
-                    flash();
-
+                    //flash();
+                    RedModMain.player.objectMult.test();
                     agent.inventory.buffDisplay.specialAbilitySlot.MakeNotUsable();
                     // make special ability slot half-transparent
                     item.invItemCount = 4; // 100 x 0.13f = 13 seconds to recharge

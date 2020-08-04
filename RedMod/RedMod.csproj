@@ -33,6 +33,8 @@
   <ItemGroup>
     <Compile Include="BerserkerTrait.cs" />
     <Compile Include="BlankTrait.cs" />
+    <Compile Include="NetworkExtension.cs" />
+    <Compile Include="NetworkTest.cs" />
     <Compile Include="newAbility.cs" />
     <Compile Include="BlankAbility.cs" />
     <Compile Include="Neuralyzer.cs" />

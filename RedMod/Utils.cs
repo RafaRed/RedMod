@@ -8,6 +8,7 @@ namespace RedMod
 
     class Utils
     {
+
         public static List<Agent> GetAgentsInArea()
         {
             Agent playerAgent = GameController.gameController.playerAgent;

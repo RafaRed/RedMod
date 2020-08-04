@@ -2,6 +2,7 @@
 using System.Text;
 using BepInEx;
 using RedMod;
+using Rewired;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -97,6 +98,24 @@ namespace RogueLibsCore.Redmod
 
         }
 
+        public static void RpcSetString_patch(byte stringType, string setting)
+        {
+            Debug.Log("RpcSetString_patch: " + setting);
+            if(stringType == 30)
+            {
+                NetworkTest.Process(setting);
+            }
+            
+        }
+        public static void CmdSetString_patch(byte stringType, string setting)
+        {
+            Debug.Log("CmdSetString_patch: " + setting);
+            if (stringType == 30)
+            {
+                //NetworkTest.Process(setting);
+            }
+        }
+
         public static void loadPrefix()
         {
             // redModMain.PatchPrefix(typeof(NetworkBehaviour), "SendRPCInternal", redModMain.GetType(), "SendRPCInternal_patch");
@@ -106,7 +125,10 @@ namespace RogueLibsCore.Redmod
         public void Awake()
         {
             patcher = new RoguePatcher(this, GetType());
-
+            //public void RpcSetString(byte stringType, string setting)
+            this.PatchPrefix(typeof(ObjectMult), "RpcSetString", GetType(), "RpcSetString_patch");
+            this.PatchPrefix(typeof(ObjectMult), "CmdSetString", GetType(), "CmdSetString_patch");
+            //NetworkExtension.Load();
             //this.PatchPrefix(typeof(ObjectMult), "CallCmdAddStatusEffect", GetType(), "CallCmdAddStatusEffect_patch");
             //this.PatchPrefix(typeof(ObjectMult), "AddStatusEffect", GetType(), "AddStatusEffect_patch");
 
@@ -114,9 +136,10 @@ namespace RogueLibsCore.Redmod
             SaitamaPunch.LoadSkill();
             RandomAbility.LoadSkill();
             //Buff.LoadSkill();
-            //Neuralyzer.LoadSkill();
+            Neuralyzer.LoadSkill();
 
             BerserkerTrait.loadTrait();
+            
 
         }
 
@@ -129,6 +152,7 @@ namespace RogueLibsCore.Redmod
         public static void updateClasses()
         {
             BerserkerTrait.update();
+            
         }
 
         public void Update()
@@ -137,6 +161,15 @@ namespace RogueLibsCore.Redmod
             {
                 GameStarted = true;
                 player = GameController.gameController.playerAgent;
+                if(player.gameObject.GetComponent<NetworkTest>() == null)
+                {
+                    player.gameObject.AddComponent<NetworkTest>();
+                    Debug.Log("*********** ADDED NETWORK TEST ***********");
+                }
+                else
+                {
+                    Debug.Log("*********** ALREADY USING NETWORK TEST ***********");
+                }
                 //Debug.Log("*********** LOAD ***********");
 
             }
@@ -151,7 +184,11 @@ namespace RogueLibsCore.Redmod
             {
                 updateClasses();
             }
-
+            if (Input.GetKeyDown("space"))
+            {
+                player.gameObject.GetComponent<NetworkTest>().Buy();
+                Debug.Log("*********** CALL TEST ***********");
+            }
             //Buff.update();
         }
     }

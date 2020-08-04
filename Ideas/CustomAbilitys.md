@@ -1,0 +1,1 @@
+ Big quest: Killing spree. You must kill 25% of a level's population
