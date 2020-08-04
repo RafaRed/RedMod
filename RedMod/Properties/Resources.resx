@@ -127,6 +127,12 @@
   <data name="questionmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\questionmark.bin;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="redclient" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redclient.bin;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="redserver" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redserver.bin;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="SoulBreaker" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SoulBreaker.bin;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

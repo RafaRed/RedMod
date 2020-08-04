@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="BerserkerTrait.cs" />
     <Compile Include="BlankTrait.cs" />
+    <Compile Include="FollowObject.cs" />
     <Compile Include="NetworkExtension.cs" />
     <Compile Include="NetworkTest.cs" />
     <Compile Include="newAbility.cs" />
@@ -61,6 +62,8 @@
     <None Include="Resources\BlankSoulStone.bin" />
     <None Include="Resources\punch.bin" />
     <None Include="Resources\questionmark.bin" />
+    <None Include="Resources\redclient.bin" />
+    <None Include="Resources\redserver.bin" />
     <None Include="Resources\SoulBreaker.bin" />
     <None Include="Resources\soulstone.bin" />
   </ItemGroup>

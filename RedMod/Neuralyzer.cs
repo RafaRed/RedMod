@@ -11,10 +11,7 @@ namespace RedMod
 
         public static void blank(Agent myPlayer, List<Agent> haters)
         {
-            //myPlayer.objectSprite.Flash();
-            //myPlayer.SpawnParticleEffect("BulletTrailMindControl", myPlayer.tr.position);
             myPlayer.gc.ScreenBump(1f, 30, myPlayer);
-            //myPlayer.objectSprite.Flash();
             myPlayer.objectMultAgent.AgentFlash();
             myPlayer.gc.playerControl.Vibrate(myPlayer.isPlayer, 0.5f, 0.2f);
             for (int i = 0; i < haters.Count; i++)

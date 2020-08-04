@@ -16,7 +16,7 @@ namespace RogueLibsCore.Redmod
     {
         public const string pluginGuid = "rafared.streetsofrogue.redmod";
         public const string pluginName = "RedMod";
-        public const string pluginVersion = "1.2";
+        public const string pluginVersion = "1.3";
         public static RedModMain redModMain;
         public static Agent player;
         public static RoguePatcher patcher;
@@ -116,6 +116,13 @@ namespace RogueLibsCore.Redmod
             }
         }
 
+        public static void RpcSendChatAnnouncement_patch(string myMessage, string myMessage2, string myMessage3, int myMessage4)
+        {
+            if(myMessage == "JoinedGame")
+            {
+                NetworkTest.JoinedGame();
+            }
+        }
         public static void loadPrefix()
         {
             // redModMain.PatchPrefix(typeof(NetworkBehaviour), "SendRPCInternal", redModMain.GetType(), "SendRPCInternal_patch");
@@ -128,6 +135,7 @@ namespace RogueLibsCore.Redmod
             //public void RpcSetString(byte stringType, string setting)
             this.PatchPrefix(typeof(ObjectMult), "RpcSetString", GetType(), "RpcSetString_patch");
             this.PatchPrefix(typeof(ObjectMult), "CmdSetString", GetType(), "CmdSetString_patch");
+            this.PatchPrefix(typeof(ObjectMult), "RpcSendChatAnnouncement", GetType(), "RpcSendChatAnnouncement_patch");
             //NetworkExtension.Load();
             //this.PatchPrefix(typeof(ObjectMult), "CallCmdAddStatusEffect", GetType(), "CallCmdAddStatusEffect_patch");
             //this.PatchPrefix(typeof(ObjectMult), "AddStatusEffect", GetType(), "AddStatusEffect_patch");

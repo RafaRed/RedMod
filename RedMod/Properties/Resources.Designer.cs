@@ -93,6 +93,26 @@ namespace RedMod.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Byte[].
         /// </summary>
+        internal static byte[] redclient {
+            get {
+                object obj = ResourceManager.GetObject("redclient", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
+        internal static byte[] redserver {
+            get {
+                object obj = ResourceManager.GetObject("redserver", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Byte[].
+        /// </summary>
         internal static byte[] SoulBreaker {
             get {
                 object obj = ResourceManager.GetObject("SoulBreaker", resourceCulture);
