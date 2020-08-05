@@ -64,6 +64,7 @@ namespace RedMod
 				package.write("isServer");
 			else
 				package.write("isClient");
+			package.write(RedModMain.pluginVersion.ToString());
 			RedNetwork.SendPackage(package);
 		}
 		public static void Test(string[] redData)
@@ -127,8 +128,9 @@ namespace RedMod
 					redData[2],
 					"(SERVER)",
 					" </color><color=green>",
-					"is running RedMod!",
-					"</color>"
+					"is running RedMod ",
+					redData[5],
+					"!</color>"
 				});
 			}
             else
@@ -140,8 +142,9 @@ namespace RedMod
 					">",
 					redData[2],
 					" </color><color=green>",
-					"is using RedMod!",
-					"</color>"
+					"is using RedMod ",
+					redData[5],
+					"!</color>"
 				});
 			}
 			
