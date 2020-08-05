@@ -8,3 +8,6 @@ Features:
 - The Random + Random Dice
 - RedMod flags for recognize players in online
 
+Download the last release:
+https://github.com/RafaRed/RedMod/releases
+
