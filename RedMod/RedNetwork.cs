@@ -1,209 +1,186 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
+using BepInEx;
+using RedMod;
+using UnityEngine;
 using UnityEngine.Networking;
+using RogueLibsCore;
+using RogueLibsCore.Redmod;
 
-
-namespace RogueLibsCore.Redmod
+namespace RedMod
 {
-    class RedNetwork : ObjectMult
-    {
-        public static int kCmdCmdAddStatusEffectOthers = -1778623922;
-        public static int kRpcRpcAddStatusEffectOthers = -1778623923;
-
-        static RedNetwork()
+	class RedNetwork : MonoBehaviour
+	{
+		public static void SendPackage(NetworkPackage package)
         {
-            NetworkBehaviour.RegisterCommandDelegate(typeof(RedNetwork), RedNetwork.kCmdCmdAddStatusEffectOthers, new NetworkBehaviour.CmdDelegate(RedNetwork.InvokeCmdCmdAddStatusEffectOthers));
-            NetworkBehaviour.RegisterRpcDelegate(typeof(RedNetwork), RedNetwork.kRpcRpcAddStatusEffectOthers, new NetworkBehaviour.CmdDelegate(RedNetwork.InvokeRpcRpcAddStatusEffectOthers));
-            NetworkCRC.RegisterBehaviour("RedNetwork", 0);
+            if (GameController.gameController.playerAgent.localPlayer)
+            {
+				RedNetwork.Process(package.data);
+            }
+            else
+            {
+				if (GameController.gameController.playerAgent.objectMult.gc.serverPlayer)
+				{
 
-            //NetworkServer.RegisterHandler(0, RpcAddStatusEffectOthers);
-            Debug.Log("RegisterCommandDelegate and RegisterRpcDelegate");
-            RedModMain.loadPrefix();
-        }
+					GameController.gameController.playerAgent.objectMult.CallRpcSetString(30, package.data);
+				}
+				else
+				{
+					GameController.gameController.playerAgent.objectMult.CallCmdSetString(30, package.data);
+				}
+			}
+			
+		}
+
+		public static void Process(string data)
+		{
+			string[] redData = data.Split('|');
+			int function = int.Parse(redData[0]);
+
+			switch (function)
+			{
+				case 0:
+					Test(redData);
+					break;
+				case 1:
+					ShowUsingRedMod(redData);
+					break;
+				case 2:
+					Neuralyzer.blank(redData);
+					break;
+			}
+
+		}
 
 
-        protected static void InvokeRpcRpcAddStatusEffectOthers(NetworkBehaviour obj, NetworkReader reader)
+		public static void JoinedGame()
         {
-            Debug.LogError("InvokeRpcAddStatusEffectOthers");
-            if (!NetworkClient.active)
+			string chatPlayerColor = GameController.gameController.playerAgent.objectMult.GetChatPlayerColor(GameController.gameController.playerAgent.playerColor);
+			NetworkPackage package = new NetworkPackage(1);
+			package.write(GameController.gameController.playerAgent.objectMult.netId.Value.ToString());
+			package.write(GameController.gameController.playerAgent.objectMult.playerUniqueID.ToString());
+			package.write(chatPlayerColor);
+			if (GameController.gameController.playerAgent.objectMult.gc.serverPlayer)
+				package.write("isServer");
+			else
+				package.write("isClient");
+			RedNetwork.SendPackage(package);
+		}
+		public static void Test(string[] redData)
+		{
+			int agentId = int.Parse(redData[1]);
+			if (GameController.gameController.playerAgent.objectMult.netId.Value == agentId)
+			{
+				GameController.gameController.playerAgent.statusEffects.AddStatusEffect("Giant");
+			}
+		}
+
+		public static void addBanner(int playerid, bool isServer) {
+			Sprite redClientBanner = RogueUtilities.ConvertToSprite(RedMod.Properties.Resources.redclient);
+			Sprite redServerBanner = RogueUtilities.ConvertToSprite(RedMod.Properties.Resources.redserver);
+			foreach (Agent player in GameController.gameController.playerAgentList)
             {
-                Debug.LogError("RPC RpcAddStatusEffectOthers called on server.");
-                return;
-            }
-        ((RedNetwork)obj).RpcAddStatusEffectOthers(reader.ReadString(), reader.ReadNetworkId(), reader.ReadNetworkId(), reader.ReadBoolean(), reader.ReadNetworkId(), reader.ReadBoolean(), (int)reader.ReadPackedUInt32());
-        }
-
-        protected static void InvokeCmdCmdAddStatusEffectOthers(NetworkBehaviour obj, NetworkReader reader)
-        {
-            Debug.LogError("InvokeCmdAddStatusEffectOthers");
-            if (!NetworkServer.active)
-            {
-                Debug.LogError("Command CmdAddStatusEffectOthers called on client.");
-                return;
-            }
-        ((RedNetwork)obj).CmdAddStatusEffectOthers(reader.ReadString(), reader.ReadBoolean(), reader.ReadNetworkId(), reader.ReadNetworkId(), reader.ReadNetworkId(), reader.ReadBoolean(), (int)reader.ReadPackedUInt32());
-        }
-
-
-
-        public void AddStatusEffectOthers(string statusEffectName, bool showText, Agent other, Agent causingAgent, NetworkInstanceId cameFromClient, bool dontPrevent, int specificTime)
-        {
-            Debug.Log("AddStatusEffectOthers");
-
-            for (int i = 0; i < 30; i++)
-            {
-                Debug.Log("Handler: " + i + " " + base.connectionToClient.CheckHandler((short)i));
-            }
-            for (int i = 0; i < 30; i++)
-            {
-                Debug.Log("ObjectHandler: " + i + " " + GameController.gameController.playerAgent.objectMult.connectionToClient.CheckHandler((short)i));
-            }
-
-            if (GameController.gameController.playerAgent.gc.multiplayerMode)
-            {
-                NetworkInstanceId causingAgentID = NetworkInstanceId.Invalid;
-                if (causingAgent != null)
+				if(player.objectMult.netId.Value == playerid)
                 {
-                    causingAgentID = causingAgent.objectNetID;
-                }
-
-                NetworkInstanceId otherAgentID = NetworkInstanceId.Invalid;
-                if (other != null)
-                {
-                    otherAgentID = other.objectNetID;
-                }
-
-                if (!GameController.gameController.playerAgent.objectMult.gc.serverPlayer && GameController.gameController.playerAgent.objectMultAgent.isLocalPlayer && cameFromClient != NetworkInstanceId.Invalid)
-                {
-                    CallCmdAddStatusEffectOthers(statusEffectName, showText, otherAgentID, causingAgentID, cameFromClient, dontPrevent, specificTime);
-                    Debug.Log("CmdAddStatusEffect: " + statusEffectName);
-                }
-                else if (GameController.gameController.playerAgent.objectMult.gc.serverPlayer)
-                {
-                    CallRpcAddStatusEffectOthers(statusEffectName, otherAgentID, causingAgentID, showText, cameFromClient, dontPrevent, specificTime);
-                    Debug.Log("RpcAddStatusEffect: " + statusEffectName);
-                }
-            }
-        }
-
-        public void CallCmdAddStatusEffectOthers(string statusEffectName, bool showText, NetworkInstanceId otherAgentID, NetworkInstanceId causingAgentID, NetworkInstanceId cameFromClient, bool dontPrevent, int specificTime)
-        {
-            Debug.Log("CallCmdAddStatusEffectOthers on " + this.gameObject.name);
-
-
-
-            if (!NetworkClient.active)
-            {
-                Debug.LogError("Command function CmdAddStatusEffect called on server.");
-                return;
-            }
-            if (GameController.gameController.playerAgent.objectMult.isServer)
-            {
-                CmdAddStatusEffectOthers(statusEffectName, showText, otherAgentID, causingAgentID, cameFromClient, dontPrevent, specificTime);
-                return;
-            }
-
-
-
-
-            NetworkWriter networkWriter = new NetworkWriter();
-            networkWriter.Write(0);
-            networkWriter.Write((short)((ushort)5));
-            networkWriter.WritePackedUInt32((uint)RedNetwork.kCmdCmdAddStatusEffectOthers);
-            networkWriter.Write(GameController.gameController.playerAgent.objectMult.GetComponent<NetworkIdentity>().netId);
-            networkWriter.Write(statusEffectName);
-            networkWriter.Write(otherAgentID);
-            networkWriter.Write(causingAgentID);
-            networkWriter.Write(showText);
-            networkWriter.Write(dontPrevent);
-            networkWriter.WritePackedUInt32((uint)specificTime);
-
-            base.SendCommandInternal(networkWriter, 0, "CmdAddStatusEffectOthers");
-
-
-        }
-
-        [Command]
-        public void CmdAddStatusEffectOthers(string statusEffectName, bool showText, NetworkInstanceId other, NetworkInstanceId causingAgentID, NetworkInstanceId cameFromClient, bool dontPrevent, int specificTime)
-        {
-            Debug.Log("CmdAddStatusEffectOthers");
-            Agent agent = null;
-            Agent agentOther = null;
-            if (causingAgentID != NetworkInstanceId.Invalid)
-            {
-                GameObject causingAgentGameObject = NetworkServer.FindLocalObject(causingAgentID);
-                GameObject otherAgentGameObject = NetworkServer.FindLocalObject(other);
-                if (agentOther != null)
-                {
-                    agent = causingAgentGameObject.GetComponent<Agent>();
-                    agentOther = otherAgentGameObject.GetComponent<Agent>();
-
-                    agentOther.SetJustHitByAgent(agent);
-                    agentOther.justHitByAgent2 = agent;
-                    agentOther.lastHitByAgent = agent;
-                }
-            }
-            agentOther.statusEffects.AddStatusEffect(statusEffectName, showText, agent, agent.objectNetID, dontPrevent, specificTime);
-        }
-
-        public void CallRpcAddStatusEffectOthers(string statusEffectName, NetworkInstanceId other, NetworkInstanceId causingAgentID, bool showText, NetworkInstanceId cameFromClient, bool dontPrevent, int specificTime)
-        {
-            Debug.Log("CallRpcAddStatusEffectOthers");
-            if (!NetworkServer.active)
-            {
-                Debug.LogError("RPC Function RpcAddStatusEffectOthers called on client.");
-                return;
-            }
-            Debug.Log("WRITE: " + GameController.gameController.playerAgent.objectMult.GetComponent<NetworkIdentity>().netId);
-            NetworkWriter networkWriter = new NetworkWriter();
-            networkWriter.Write(0);
-            networkWriter.Write((short)((ushort)2));
-            networkWriter.WritePackedUInt32((uint)RedNetwork.kRpcRpcAddStatusEffectOthers);
-            networkWriter.Write(GameController.gameController.playerAgent.objectMult.GetComponent<NetworkIdentity>().netId);
-            networkWriter.Write(statusEffectName);
-            networkWriter.Write(other);
-            networkWriter.Write(causingAgentID);
-            networkWriter.Write(showText);
-            networkWriter.Write(cameFromClient);
-            networkWriter.Write(dontPrevent);
-            networkWriter.WritePackedUInt32((uint)specificTime);
-            base.SendRPCInternal(networkWriter, 0, "RpcAddStatusEffectOthers");
-        }
-
-
-        [ClientRpc]
-        public void RpcAddStatusEffectOthers(string statusEffectName, NetworkInstanceId other, NetworkInstanceId causingAgentID, bool showText, NetworkInstanceId cameFromClient, bool dontPrevent, int specificTime)
-        {
-            Debug.Log("RpcAddStatusEffect");
-            Agent agent = null;
-            Agent agentOther = null;
-            if (cameFromClient != NetworkInstanceId.Invalid)
-            {
-                GameObject gameObject = ClientScene.FindLocalObject(other);
-
-                if (gameObject != null)
-                {
-                    agent = gameObject.GetComponent<Agent>();
-                }
-
-            }
-            bool flag = false;
-            if (agent != null && agent.localPlayer)
-            {
-                flag = true;
-            }
-            if (!this.gc.serverPlayer && !flag)
-            {
-                Agent causingAgent = null;
-                if (causingAgentID != NetworkInstanceId.Invalid)
-                {
-                    GameObject gameObject2 = ClientScene.FindLocalObject(causingAgentID);
-                    if (gameObject2 != null)
+					
+                    if (player.gameObject.transform.Find("Banner") == null)
                     {
-                        causingAgent = gameObject2.GetComponent<Agent>();
-                    }
-                }
-                agent.statusEffects.AddStatusEffect(statusEffectName, false, causingAgent, NetworkInstanceId.Invalid, dontPrevent, specificTime);
+						
+						GameObject banner;
+						banner = new GameObject("Banner");
+						banner.transform.position = new Vector3(0, 0, 0);
+						banner.transform.localPosition = new Vector3(0, 0, 0);
+						banner.AddComponent<FollowObject>();
+						banner.GetComponent<FollowObject>().follow = player.gameObject;
+
+						
+
+
+						banner.AddComponent<SpriteRenderer>();
+                        if (isServer)
+                        {
+							banner.GetComponent<SpriteRenderer>().sprite = redServerBanner;
+						}
+                        else
+                        {
+							banner.GetComponent<SpriteRenderer>().sprite = redClientBanner;
+						}
+						break;
+					}
+					
+				}
             }
-        }
-    }
+		}
+
+		public static void ShowUsingRedMod(string[] redData)
+        {
+			bool isServer = redData[4] == "isServer";
+			
+			string text = "";
+            if (isServer)
+            {
+				text = string.Concat(new string[]
+				{
+					"<color=",
+					redData[3],
+					">",
+					redData[2],
+					"(SERVER)",
+					" </color><color=green>",
+					"is running RedMod!",
+					"</color>"
+				});
+			}
+            else
+            {
+				text = string.Concat(new string[]
+				{
+					"<color=",
+					redData[3],
+					">",
+					redData[2],
+					" </color><color=green>",
+					"is using RedMod!",
+					"</color>"
+				});
+			}
+			
+			bool scrollToBottom = true;
+			if (GameController.gameController.playerAgent.gc.chatLog.scrollBar.value != 0f && GameController.gameController.playerAgent.gc.chatLog.scrollBarGo.activeSelf)
+			{
+				scrollToBottom = false;
+			}
+			GameController.gameController.playerAgent.gc.chatLog.AddChatlogText(text, scrollToBottom);
+			
+			addBanner(int.Parse(redData[1]), isServer);
+
+
+		}
+
+		
+
+		public void Buy()
+		{
+
+			foreach(Agent a in GameController.gameController.playerAgentList)
+            {
+				if(a.objectMult.netId != GameController.gameController.playerAgent.objectMult.netId)
+                {
+					if (GameController.gameController.playerAgent.objectMult.gc.serverPlayer)
+					{
+						GameController.gameController.playerAgent.objectMult.CallRpcSetString(30, "0|" + a.objectMult.netId);
+					}
+					else
+					{
+						GameController.gameController.playerAgent.objectMult.CallCmdSetString(30, "0|" + a.objectMult.netId);
+					}
+				}
+
+            }
+			
+		}
+
+
+
+	}
 }

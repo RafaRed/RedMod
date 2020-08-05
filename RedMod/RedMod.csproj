@@ -34,8 +34,8 @@
     <Compile Include="BerserkerTrait.cs" />
     <Compile Include="BlankTrait.cs" />
     <Compile Include="FollowObject.cs" />
-    <Compile Include="NetworkExtension.cs" />
-    <Compile Include="NetworkTest.cs" />
+    <Compile Include="NetworkPackage.cs" />
+    <Compile Include="RedNetwork.cs" />
     <Compile Include="newAbility.cs" />
     <Compile Include="BlankAbility.cs" />
     <Compile Include="Neuralyzer.cs" />
@@ -48,7 +48,6 @@
     </Compile>
     <Compile Include="RandomAbility.cs" />
     <Compile Include="Buff.cs" />
-    <Compile Include="RedNetwork.cs" />
     <Compile Include="SaitamaPunch.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

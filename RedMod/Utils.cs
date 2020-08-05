@@ -9,6 +9,63 @@ namespace RedMod
     class Utils
     {
 
+        public static int getId(Agent agent)
+        {
+            int id = 0;
+            if (GameController.gameController.playerAgent.localPlayer)
+            {
+                id = agent.agentID;
+            }
+            else
+            {
+                id = (int)agent.objectMult.netId.Value;
+            }
+            return id;
+        }
+        public static int getMyNetid()
+        {
+            int id = 0;
+            if (GameController.gameController.playerAgent.localPlayer)
+            {
+                id = GameController.gameController.playerAgent.agentID;
+            }
+            else
+            {
+                id = (int)GameController.gameController.playerAgent.objectMult.netId.Value;
+            }
+
+            return id;
+        }
+        public static List<Agent> getAgentList(List<string> agents)
+        {
+            List<Agent> agentList = new List<Agent>();
+            foreach (Agent a in GameController.gameController.agentList)
+            {
+                foreach (string netid in agents)
+                {
+                    if (Utils.getId(a) == int.Parse(netid))
+                    {
+                        agentList.Add(a);
+                        break;
+                    }
+                }
+            }
+            return agentList;
+        }
+        public static Agent getPlayer(int netid)
+        {
+            Agent player = null;
+            foreach (Agent a in GameController.gameController.playerAgentList)
+            {
+
+                if (Utils.getId(a) == netid)
+                {
+                    player = a;
+                    break;
+                }
+            }
+            return player;
+        }
         public static List<Agent> GetAgentsInArea()
         {
             Agent playerAgent = GameController.gameController.playerAgent;

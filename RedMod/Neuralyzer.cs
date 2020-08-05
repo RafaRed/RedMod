@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Light2D;
 using RogueLibsCore;
 using RogueLibsCore.Redmod;
 using UnityEngine;
@@ -9,40 +10,48 @@ namespace RedMod
     {
 
 
-        public static void blank(Agent myPlayer, List<Agent> haters)
+        public static void blank(string[] redData)
         {
-            myPlayer.gc.ScreenBump(1f, 30, myPlayer);
-            myPlayer.objectMultAgent.AgentFlash();
-            myPlayer.gc.playerControl.Vibrate(myPlayer.isPlayer, 0.5f, 0.2f);
-            for (int i = 0; i < haters.Count; i++)
+            Agent agent = Utils.getPlayer(int.Parse(redData[1]));
+            List<Agent> agentlist = Utils.getAgentList(NetworkPackage.read_string_list(redData[2]));
+            if(Utils.getId(agent) == Utils.getMyNetid())
+            {
+                agent.gc.ScreenBump(1f, 30, agent);
+                agent.gc.playerControl.Vibrate(agent.isPlayer, 0.5f, 0.2f);
+            }
+            
+            agent.objectSprite.Flash();
+           
+            foreach(Agent e in agentlist)
             {
                 //if (haters[i].relationships.GetRelCode(myPlayer) != relStatus.Aligned)
                 {
-                    haters[i].objectSprite.Flash();
+                    e.objectSprite.Flash();
 
-                    haters[i].pathing = 0;
-                    haters[i].movement.PathStop();
-                    haters[i].brainUpdate.slowAIWait = 0;
-                    if (haters[i].brain.Goals.Count > 0)
+                    e.pathing = 0;
+                    e.movement.PathStop();
+                    e.brainUpdate.slowAIWait = 0;
+                    if (e.brain.Goals.Count > 0)
                     {
-                        haters[i].brain.RemoveAllSubgoals(haters[i].brain.Goals[0]);
+                        e.brain.RemoveAllSubgoals(e.brain.Goals[0]);
                     }
-                    if (haters[i].brain.Goals.Count > 0)
+                    if (e.brain.Goals.Count > 0)
                     {
-                        haters[i].brain.Goals[0].Terminate();
+                        e.brain.Goals[0].Terminate();
                     }
-                    haters[i].brain.Goals.Clear();
-                    haters[i].mostRecentGoal = "DoNothing";
-                    haters[i].mostRecentGoalCode = goalType.DoNothing;
-                    haters[i].inCombat = false;
-                    haters[i].inFleeCombat = false;
-                    haters[i].gc.spawnerMain.SpawnStateIndicator(haters[i], "NoAnim");
-                    haters[i].gc.audioHandler.Play(haters[i], "AgentAnnoyed");
+                    e.relationships.SetRel(agent, "Neutral", true);
+                    e.brain.Goals.Clear();
+                    e.mostRecentGoal = "DoNothing";
+                    e.mostRecentGoalCode = goalType.DoNothing;
+                    e.inCombat = false;
+                    e.inFleeCombat = false;
+                    e.gc.spawnerMain.SpawnStateIndicator(e, "NoAnim");
+                    e.gc.audioHandler.Play(e, "AgentAnnoyed");
 
-                    myPlayer.objectMultAgent.SetRel(haters[i], "Neutral", true);
+                    
 
                     //haters[i].objectMultAgent.Set(myPlayer, 0);
-                    haters[i].statusEffects.CreateBuffText("Neuralyzed");
+                    e.statusEffects.CreateBuffText("Neuralyzed");
 
 
                 }
@@ -51,8 +60,8 @@ namespace RedMod
 
         public static void flash(int agentid)
         {
-            Agent playerAgent = GameController.gameController.playerAgentList[agentid];
-            List<Agent> list = new List<Agent>();
+            Agent playerAgent = Utils.getPlayer(agentid);
+            List<string> list = new List<string>();
             for (int i = 0; i < GameController.gameController.agentList.Count; i++)
             {
                 Agent agent = GameController.gameController.agentList[i];
@@ -67,14 +76,19 @@ namespace RedMod
                         relStatus relTypeCode2 = relationship2.relTypeCode;
                         //if (relTypeCode == relStatus.Annoyed || agent.relationships.GetRel(playerAgent) == "Hateful")
                         {
-                            list.Add(agent);
+                           
+                            list.Add(Utils.getId(agent).ToString());
+
                         }
                     }
                 }
             }
-            if (list != null)
+            if (list != null && list.Count>0)
             {
-                blank(playerAgent, list);
+                NetworkPackage package = new NetworkPackage(2);
+                package.write(Utils.getId(GameController.gameController.playerAgent).ToString());
+                package.write_string_list(list);
+                RedNetwork.SendPackage(package);
             }
 
 
@@ -93,7 +107,8 @@ namespace RedMod
                 {
 
                 });
-
+            skill.Available = true;
+            skill.CostInCharacterCreation = 9;
 
             skill.OnPressed = (item, agent) =>
             {
@@ -101,8 +116,7 @@ namespace RedMod
                     agent.gc.audioHandler.Play(agent, "CantDo");
                 else
                 {
-                    //flash();
-                    RedModMain.player.objectMult.test();
+                    flash(Utils.getMyNetid());
                     agent.inventory.buffDisplay.specialAbilitySlot.MakeNotUsable();
                     // make special ability slot half-transparent
                     item.invItemCount = 4; // 100 x 0.13f = 13 seconds to recharge
